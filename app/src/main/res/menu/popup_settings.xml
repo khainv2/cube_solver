@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item
+        android:id="@+id/menu_speed_slow"
+        android:title="Tốc độ chậm"
+        android:checkable="true" />
+    
+    <item
+        android:id="@+id/menu_speed_normal"
+        android:title="Tốc độ bình thường"
+        android:checkable="true"
+        android:checked="true" />
+    
+    <item
+        android:id="@+id/menu_speed_fast"
+        android:title="Tốc độ nhanh"
+        android:checkable="true" />
+    
+    <item
+        android:id="@+id/menu_speed_very_fast"
+        android:title="Tốc độ rất nhanh"
+        android:checkable="true" />
+    
+    <item
+        android:id="@+id/menu_divider"
+        android:title=""
+        android:enabled="false" />
+    
+    <item
+        android:id="@+id/menu_reset_view"
+        android:title="Reset View"
+        android:icon="@android:drawable/ic_menu_revert" />
+    
+</menu>

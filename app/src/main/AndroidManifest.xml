@@ -28,9 +28,9 @@
         android:theme="@style/Theme.KubeSolver"
         tools:targetApi="31" >
         <activity
-            android:name=".camera.CameraActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="landscape"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.KubeSolver" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,6 +38,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".camera.CameraActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.KubeSolver" />
     </application>
 
 </manifest>

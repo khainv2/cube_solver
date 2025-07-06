@@ -195,7 +195,7 @@ class Cube3D(private var cubeState: ColorfulCube) {
         val m = move
         if (m == null)
             return tileVertices
-        if (m.getFace() == face || relatedFace(m.getFace(), face, row, col)) {
+        if (m.getFace() == face || Face.relatedFace(m.getFace(), face, row, col)) {
             return rotateArray(tileVertices, m.getFace().getAxis(), angle)
         }
         return tileVertices

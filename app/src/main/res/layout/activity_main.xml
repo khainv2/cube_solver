@@ -2,45 +2,70 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/my_layout"
+    <!-- Status Bar -->
+    <com.khainv9.kubesolver.ui.StatusView
+        android:id="@+id/status_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="@color/colorPrimary" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+    <!-- Camera View - Chiếm không gian lớn hơn -->
+    <com.khainv9.kubesolver.camera.EnhancedCameraView
+        android:id="@+id/camera_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3" />
+
+    <!-- Action Buttons - Đặt ở giữa -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="@color/colorAccent">
+
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:text="Reset"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/white"
+            android:textColor="@color/colorPrimary" />
 
-            <Button
-                android:id="@+id/capture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Capture" />
+        <Button
+            android:id="@+id/btn_solve"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Giải Cube"
+            android:layout_marginStart="8dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white" />
 
-            <Button
-                android:id="@+id/reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reset" />
-        </LinearLayout>
-        <com.khainv9.kubesolver.cubeview.RubiksCubeGLSurfaceView
-            android:id="@+id/cubeView"
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="0" />
-        <org.opencv.android.JavaCameraView
-            android:id="@+id/cameraView"
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="5"/>
     </LinearLayout>
+
+    <!-- 3D Cube View - Nhỏ hơn -->
+    <com.khainv9.kubesolver.cubeview.RubiksCubeGLSurfaceView
+        android:id="@+id/cube_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2" />
+
+    <!-- Media Controls -->
+    <com.khainv9.kubesolver.ui.MediaControlView
+        android:id="@+id/media_control"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="@color/colorPrimaryDark"
+        android:visibility="gone" />
 
 </LinearLayout>
