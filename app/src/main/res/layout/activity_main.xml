@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
     <!-- Status Bar -->
@@ -12,15 +13,69 @@
         android:id="@+id/status_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:padding="8dp"
         android:background="@color/colorPrimary" />
 
-    <!-- Camera View - Chiếm không gian lớn hơn -->
-    <com.khainv9.kubesolver.camera.EnhancedCameraView
-        android:id="@+id/camera_view"
+    <!-- Camera View với Overlay Buttons -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3" />
+        android:layout_weight="3">
+
+        <!-- Camera View - Chiếm không gian lớn hơn -->
+        <com.khainv9.kubesolver.camera.EnhancedCameraView
+            android:id="@+id/camera_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Overlay Buttons - Bên phải camera -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/rounded_overlay_bg"
+            android:padding="8dp">
+
+            <Button
+                android:id="@+id/btn_capture"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="📷"
+                android:textSize="20sp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Button.Colored" />
+
+            <Button
+                android:id="@+id/btn_flash"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="💡"
+                android:textSize="20sp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Button.Colored" />
+
+            <Button
+                android:id="@+id/btn_grid"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="⚏"
+                android:textSize="20sp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Button.Colored" />
+
+            <Button
+                android:id="@+id/btn_settings"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="⚙"
+                android:textSize="20sp"
+                style="@style/Widget.AppCompat.Button.Colored" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
     <!-- Action Buttons - Đặt ở giữa -->
     <LinearLayout
@@ -36,9 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Reset"
-            android:layout_marginEnd="8dp"
-            android:background="@android:color/white"
-            android:textColor="@color/colorPrimary" />
+            android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btn_solve"
@@ -46,9 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Giải Cube"
-            android:layout_marginStart="8dp"
-            android:background="@color/colorPrimary"
-            android:textColor="@android:color/white" />
+            android:layout_marginStart="8dp" />
 
     </LinearLayout>
 
@@ -65,7 +116,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:paddingBottom="48dp"
         android:background="@color/colorPrimaryDark"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:fitsSystemWindows="true" />
 
 </LinearLayout>

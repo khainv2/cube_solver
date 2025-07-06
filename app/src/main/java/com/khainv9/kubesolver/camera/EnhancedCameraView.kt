@@ -6,6 +6,7 @@ import android.util.Log
 import com.khainv9.kubesolver.cubeview.CubeColor
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.JavaCameraView
+import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.Point
@@ -31,32 +32,45 @@ class EnhancedCameraView : JavaCameraView, CameraBridgeViewBase.CvCameraViewList
     private lateinit var detectedColors: Array<CubeColor>
     private var showScanOverlay = true
     
+    // Các Mat objects tái sử dụng để tránh memory leak
+    private var croppedSquare: Mat? = null
+    private var rotatedSquare: Mat? = null
+    private var newFrame: Mat? = null
+    
+    // Flag để tránh callback liên tục
+    private var hasNotifiedScan = false
+    
     // Callback interface để thông báo khi scan xong
     interface OnFaceScannedListener {
         fun onFaceScanned(colors: Array<CubeColor>)
     }
     
+    // Callback interface để thông báo tiến trình scan
+    interface OnScanProgressListener {
+        fun onScanProgress(colors: Array<CubeColor>, detectedCount: Int, totalCount: Int)
+    }
+
     private var scanListener: OnFaceScannedListener? = null
+    private var progressListener: OnScanProgressListener? = null
     
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
     }
-    
-    constructor(context: Context, cameraId: Int) : super(context, cameraId) {
-        init()
-    }
-    
+
     private fun init() {
         colorDetector = ColorDetector()
         detectedColors = Array(9) { CubeColor.UNKNOWN }
-        
-        // Set this view as camera listener
         setCvCameraViewListener(this)
     }
     
     // Setter cho callback
     fun setOnFaceScannedListener(listener: OnFaceScannedListener?) {
         this.scanListener = listener
+    }
+    
+    // Setter cho progress callback
+    fun setOnScanProgressListener(listener: OnScanProgressListener?) {
+        this.progressListener = listener
     }
     
     fun setShowScanOverlay(show: Boolean) {
@@ -82,12 +96,44 @@ class EnhancedCameraView : JavaCameraView, CameraBridgeViewBase.CvCameraViewList
 
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame): Mat {
         val frame = inputFrame.rgba()
-
-        if (showScanOverlay) {
-            processCubeDetection(frame)
+        
+        // Lazy initialization của Mat objects
+        if (croppedSquare == null) {
+            croppedSquare = Mat()
+            rotatedSquare = Mat()
+            newFrame = Mat()
         }
         
-        return frame
+        // Lưu lại kích thước gốc
+        val originalWidth = frame.width()
+        val originalHeight = frame.height()
+        
+        // Crop lấy vùng hình vuông bên phía trái với kích thước height x height
+        val squareSize = originalHeight
+        val cropRect = org.opencv.core.Rect(0, 0, squareSize, squareSize)
+        
+        // Sử dụng Mat đã có sẵn thay vì tạo mới
+        frame.submat(cropRect).copyTo(croppedSquare!!)
+        
+        // Xoay hình vuông chiều kim đồng hồ (90 độ)
+        Core.rotate(croppedSquare!!, rotatedSquare!!, Core.ROTATE_90_CLOCKWISE)
+        
+        // Tạo frame mới có kích thước bằng frame input
+        newFrame!!.create(originalHeight, originalWidth, frame.type())
+        newFrame!!.setTo(Scalar(0.0, 0.0, 0.0, 0.0)) // Làm trong suốt
+        
+        // Copy hình vuông đã xoay vào newFrame ở vị trí phía trái
+        val roiRect = org.opencv.core.Rect(0, 0, squareSize, squareSize)
+        val roi = newFrame!!.submat(roiRect)
+        rotatedSquare!!.copyTo(roi)
+        roi.release()
+        
+        // Thực hiện processCubeDetection trên newFrame
+        if (showScanOverlay) {
+            processCubeDetection(newFrame!!)
+        }
+        
+        return newFrame!!.clone()
     }
     
     private fun processCubeDetection(frame: Mat) {
@@ -129,8 +175,13 @@ class EnhancedCameraView : JavaCameraView, CameraBridgeViewBase.CvCameraViewList
         // Vẽ overlay
         drawScanOverlay(frame, faceVertex, center)
         
-        // Thông báo khi scan xong
-        if (isAllColorsDetected()) {
+        // Thông báo tiến trình scan (luôn gửi kết quả)
+        val detectedCount = detectedColors.count { it != CubeColor.UNKNOWN }
+        progressListener?.onScanProgress(getDetectedColors(), detectedCount, 9)
+        
+        // Thông báo khi scan xong (chỉ thông báo 1 lần)
+        if (isAllColorsDetected() && !hasNotifiedScan) {
+            hasNotifiedScan = true
             scanListener?.onFaceScanned(getDetectedColors())
         }
     }
@@ -270,12 +321,24 @@ class EnhancedCameraView : JavaCameraView, CameraBridgeViewBase.CvCameraViewList
     }
     
     override fun disableView() {
+        cleanup()
         super.disableView()
         Log.d(TAG, "Camera view disabled")
     }
     
+    // Cleanup resources để tránh memory leak
+    fun cleanup() {
+        croppedSquare?.release()
+        rotatedSquare?.release()
+        newFrame?.release()
+        croppedSquare = null
+        rotatedSquare = null
+        newFrame = null
+    }
+    
     // Reset detected colors
     fun resetDetection() {
+        hasNotifiedScan = false
         for (i in detectedColors.indices) {
             detectedColors[i] = CubeColor.UNKNOWN
         }
@@ -286,5 +349,17 @@ class EnhancedCameraView : JavaCameraView, CameraBridgeViewBase.CvCameraViewList
         if (scanListener != null && isAllColorsDetected()) {
             scanListener?.onFaceScanned(getDetectedColors())
         }
+    }
+    
+    // Get current scan progress
+    fun getScanProgress(): Pair<Int, Int> {
+        val detectedCount = detectedColors.count { it != CubeColor.UNKNOWN }
+        return Pair(detectedCount, 9)
+    }
+    
+    // Get completion percentage
+    fun getCompletionPercentage(): Float {
+        val detectedCount = detectedColors.count { it != CubeColor.UNKNOWN }
+        return (detectedCount.toFloat() / 9.0f) * 100.0f
     }
 }

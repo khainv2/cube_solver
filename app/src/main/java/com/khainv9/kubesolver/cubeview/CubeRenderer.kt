@@ -58,8 +58,8 @@ class RubiksCubeRenderer : GLSurfaceView.Renderer {
 
         for (i in 0..5)  {
             for (j in 0..8) {
-                colorfulCube.colors[i][j] = Face.entries[i].getInitColor()
-//                colorfulCube.colors[i][j] = CubeColor.UNKNOWN
+//                colorfulCube.colors[i][j] = Face.entries[i].getInitColor()
+                colorfulCube.colors[i][j] = CubeColor.UNKNOWN
             }
         }
         cube = Cube3D(colorfulCube)

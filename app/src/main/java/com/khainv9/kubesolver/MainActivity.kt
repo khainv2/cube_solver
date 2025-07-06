@@ -78,13 +78,13 @@ class MainActivity : AppCompatActivity() {
         cameraView.setOnFaceScannedListener(object : EnhancedCameraView.OnFaceScannedListener {
             override fun onFaceScanned(colors: Array<CubeColor>) {
                 runOnUiThread {
-                    onFaceScanned(colors)
+                    handleFaceScanned(colors)
                 }
             }
         })
     }
     
-    private fun onFaceScanned(colors: Array<CubeColor>) {
+    private fun handleFaceScanned(colors: Array<CubeColor>) {
         Log.d(TAG, "Face scanned with ${colors.size} colors")
         
         // Update UI

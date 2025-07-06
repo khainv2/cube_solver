@@ -21,8 +21,7 @@ class StatusView @JvmOverloads constructor(
     
     private lateinit var statusText: TextView
     private lateinit var progressBar: ProgressBar
-    private lateinit var statusIcon: ImageView
-    
+
     enum class ScanStatus {
         IDLE,           // Chưa bắt đầu
         SCANNING,       // Đang quét
@@ -43,10 +42,9 @@ class StatusView @JvmOverloads constructor(
         
         statusText = findViewById(R.id.status_text)
         progressBar = findViewById(R.id.progress_bar)
-        statusIcon = findViewById(R.id.status_icon)
-        
+
         // Set default status
-        setStatus("Sẵn sàng", ScanStatus.IDLE)
+//        setStatus("Sẵn sàng", ScanStatus.IDLE)
     }
     
     fun setStatus(text: String, status: ScanStatus) {
@@ -55,36 +53,24 @@ class StatusView @JvmOverloads constructor(
         when (status) {
             ScanStatus.IDLE -> {
                 progressBar.visibility = View.GONE
-                statusIcon.setImageResource(android.R.drawable.ic_media_play)
-                statusIcon.visibility = View.VISIBLE
             }
             ScanStatus.SCANNING -> {
                 progressBar.visibility = View.VISIBLE
-                statusIcon.visibility = View.GONE
             }
             ScanStatus.FACE_COMPLETE -> {
                 progressBar.visibility = View.GONE
-                statusIcon.setImageResource(android.R.drawable.checkbox_on_background)
-                statusIcon.visibility = View.VISIBLE
             }
             ScanStatus.ALL_COMPLETE -> {
                 progressBar.visibility = View.GONE
-                statusIcon.setImageResource(android.R.drawable.checkbox_on_background)
-                statusIcon.visibility = View.VISIBLE
             }
             ScanStatus.SOLVING -> {
                 progressBar.visibility = View.VISIBLE
-                statusIcon.visibility = View.GONE
             }
             ScanStatus.SOLVED -> {
                 progressBar.visibility = View.GONE
-                statusIcon.setImageResource(android.R.drawable.checkbox_on_background)
-                statusIcon.visibility = View.VISIBLE
             }
             ScanStatus.ERROR -> {
                 progressBar.visibility = View.GONE
-                statusIcon.setImageResource(android.R.drawable.ic_delete)
-                statusIcon.visibility = View.VISIBLE
             }
         }
     }
